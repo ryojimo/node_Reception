@@ -1,0 +1,73 @@
+<!--
+ * @fileoverview アプリケーション UI
+ * @author       Ryoji Morita
+ * @version      0.0.1
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./style.css" type="text/css" />
+  <title>Bridge Terminal</title>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/app.js"></script>
+</head>
+<body>
+<!--
+<h1>RECEPTION ver 1.0</h1>
+-->
+<!-- Message -->
+<section>
+  <p align="left"   class="name" id="val_prefix"></p>
+  <p align="center" class="name" id="val_name"></p>
+  <p align="center" class="time" id="val_time"></p>
+  <p align="right"  class="name" id="val_postfix"></p>
+</section>
+
+
+<!--===========================================================================
+■ COMMAND INPUT
+============================================================================-->
+<!--
+<section>
+  <h1>COMMAND INPUT</h1>
+
+  <p>※ コマンドを入力してください。</p>
+
+  <form action="" method="post" onsubmit="return false;">
+    <input type="text" class="text" style="width:30%; padding:10px" id="data"/>
+    <input type="submit" class="button" style="padding:10px" onclick="sendCmd_Input();" value="送信" />
+    <br/>
+  </form>
+</section>
+-->
+
+
+<!--===========================================================================
+■ LINKS
+============================================================================-->
+<!--
+<section>
+  <h1>Links</h1>
+</section>
+-->
+
+
+<!--===========================================================================
+■ footer :
+============================================================================-->
+<!--
+<footer>
+  <address></address>
+</footer>
+-->
+<section>
+  <!-- 画面更新ボタン -->
+  <input type="submit" class="button" onclick="sendSetCmd( 'sudo ./board.out usbkey 0x3E' );" value="画面更新" />
+  <!-- 画面最大表示ボタン -->
+  <input type="submit" class="button" onclick="sendSetCmd( 'sudo ./board.out usbkey 0x44' );" value="全画面表示" />
+</section>
+
+</body>
+</html>
