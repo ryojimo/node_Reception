@@ -3,12 +3,12 @@
  * @author       Ryoji Morita
  * @version      0.0.1
 */
-var sv_ip   = "reception.rp.lfx.sony.co.jp";  // node.js server の IP アドレス
-//var sv_ip   = "43.31.78.45";                // node.js server の IP アドレス
-//var sv_ip   = "192.168.91.123";             // node.js server の IP アドレス
+var sv_ip   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
+//var sv_ip   = '43.2.100.151';               // node.js server の IP アドレス
+//var sv_ip   = '192.168.91.1';               // node.js server の IP アドレス
 var sv_port = 4000;                           // node.js server の port 番号
 
-var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
+var server = io.connect( 'http://' + sv_ip + ':' + sv_port ); //ローカル
 
 
 //-----------------------------------------------------------------------------
@@ -53,18 +53,18 @@ server.on( 'S_to_C_DATA', function( data ){
 
   // Special Name
   var name = [
-              { gid:"0000900576", name:"中田先生",     postfix:"さん" }, // 中田 充
-              { gid:"0000920698", name:"本村パパ",     postfix:"さん" }, // 本村 謙介
-              { gid:"0000931034", name:"金子店長",     postfix:"さん" }, // 金子 孝幸
-              { gid:"0000108215", name:"福馬工房長",   postfix:"さん" }, // 福馬 洋平
-              { gid:"0000114347", name:"マイロード",   postfix:""     }, // 森田 良二
-              { gid:"0000134706", name:"ぼす",         postfix:"さん" }, // 林 哲也
-              { gid:"0000139082", name:"鈴木副工房長", postfix:"さん" }, // 鈴木 龍一
-              { gid:"0000139174", name:"のぶし",       postfix:"さん" }  // 山本 崇晴
+              { gid:'0000900576', name:'中田先生',     postfix:'さん' }, // 中田 充
+              { gid:'0000920698', name:'本村パパ',     postfix:'さん' }, // 本村 謙介
+              { gid:'0000931034', name:'金子店長',     postfix:'さん' }, // 金子 孝幸
+              { gid:'0000108215', name:'福馬工房長',   postfix:'さん' }, // 福馬 洋平
+              { gid:'0000114347', name:'マイロード',   postfix:''"     }, // 森田 良二
+              { gid:'0000134706', name:'ぼす',         postfix:'さん' }, // 林 哲也
+              { gid:'0000139082', name:'鈴木副工房長', postfix:'さん' }, // 鈴木 龍一
+              { gid:'0000139174', name:'のぶし',       postfix:'さん' }  // 山本 崇晴
              ];
 
   // data.gid が name テーブルにあれば data.name を変える
-  var postfix = "さん";
+  var postfix = 'さん';
   for( i = 0; i < name.length; i++ ){
     if( name[i].gid == data.gid ){
       data.name = name[i].name;
@@ -72,10 +72,10 @@ server.on( 'S_to_C_DATA', function( data ){
     }
   }
 
-  document.getElementById("val_prefix" ).innerHTML = "ようこそ";
-  document.getElementById("val_name"   ).innerHTML = data.name;   // 名前を表示
-  document.getElementById("val_time"   ).innerHTML = "";          // 時刻表示をクリア
-  document.getElementById("val_postfix").innerHTML = postfix;     // postfix を表示
+  document.getElementById('val_prefix' ).innerHTML = 'ようこそ';
+  document.getElementById('val_name'   ).innerHTML = data.name;   // 名前を表示
+  document.getElementById('val_time'   ).innerHTML = '';          // 時刻表示をクリア
+  document.getElementById('val_postfix').innerHTML = postfix;     // postfix を表示
 
   // しゃべる
   // data.name を苗字と "さん" の形にする
@@ -131,9 +131,9 @@ function setCmnt( data ){
 
   var num = date.getDate() - day_flag;
   if( day_flag !== NaN && num > 3 ){
-    g_cmnt += "、" + num + "日ぶりですね。";
+    g_cmnt += '、' + num + '日ぶりですね。';
   } else {
-    g_cmnt += "、" + "ご意見、ご要望はこの裏のアンケートへおねがいします。";
+    g_cmnt += '、' + 'ご意見、ご要望はこの裏のアンケートへおねがいします。';
   }
 
   console.log( "[app.js] g_cmnt = " + g_cmnt );
@@ -151,17 +151,17 @@ function resetMonitor(){
   console.log( "[app.js] resetMonitor()" );
 
   var date = new Date();
-  var yobi = new Array( "日", "月", "火", "水", "木", "金", "土" );
+  var yobi = new Array( '日', '月', '火', '水', '木', '金', '土' );
 
   var month = toDoubleDigits( date.getMonth() + 1 );
   var day   = toDoubleDigits( date.getDate() );
   var week  = date.getDay();
-  var time  = toDoubleDigits( date.getHours() ) + ":" + toDoubleDigits( date.getMinutes() );
+  var time  = toDoubleDigits( date.getHours() ) + ':' + toDoubleDigits( date.getMinutes() );
 
-  document.getElementById("val_prefix" ).innerHTML = month + "/" + day + "(" + yobi[week] + ")";
-  document.getElementById("val_name"   ).innerHTML = "";    // 名前を表示
-  document.getElementById("val_time"   ).innerHTML = time;  // 時間を表示
-  document.getElementById("val_postfix").innerHTML = "";    // postfix を表示
+  document.getElementById('val_prefix' ).innerHTML = month + '/' + day + '(' + yobi[week] + ')';
+  document.getElementById('val_name'   ).innerHTML = '';    // 名前を表示
+  document.getElementById('val_time'   ).innerHTML = time;  // 時間を表示
+  document.getElementById('val_postfix').innerHTML = '';    // postfix を表示
 }
 
 
@@ -175,7 +175,7 @@ function resetMonitor(){
 var toDoubleDigits = function( num ){
   console.log( "[app.js] toDoubleDigits()" );
   console.log( "[app.js] num = " + num );
-  num += "";
+  num += '';
   if( num.length === 1 ){
     num = "0" + num;
   }
@@ -214,11 +214,11 @@ function sendSetCmd( cmd ){
 function sendTalkHello(){
   console.log( "[app.js] sendTalkHello()" );
 
-  var prefix = ["ようこそ",
-                "こんにちわ",
-                "いらっしゃいませ",
-                "ご利用ありがとうございます",
-                "畳の上に椅子を置くときは足あとが残らないものを選んでね"
+  var prefix = ['ようこそ',
+                'こんにちわ',
+                'いらっしゃいませ',
+                'ご利用ありがとうございます',
+                'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'
                ];
 
   var no = Math.floor( Math.random() * prefix.length );
@@ -229,7 +229,7 @@ function sendTalkHello(){
   server.emit( 'C_to_S_TALK_HELLO', hi + g_cmnt );
 
   // g_cmnt をクリア
-  g_cmnt = "";
+  g_cmnt = '';
 }
 
 

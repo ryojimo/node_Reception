@@ -12,11 +12,9 @@ var colors   = require( 'colors' );
 require( 'date-utils' );
 var schedule = require( 'node-schedule' );
 
-const DataCmnts  = require( './js/DataCmnts' );
 const DataPersons = require( './js/DataPersons' );
-const DataRoom   = require( './js/DataRoom' );
-const Docomo     = require( './js/Docomo' );
-const PlayMusic  = require( './js/PlayMusic' );
+const DataRoom    = require( './js/DataRoom' );
+const Docomo      = require( './js/Docomo' );
 
 const OSCAR = require( './js/OSCAR' );
 
@@ -199,7 +197,7 @@ io.sockets.on( 'connection', function( socket ){
     console.log( "[main.js] " + 'C_to_S_TALK_HELLO' );
     console.log( "[main.js] cmnt = " + cmnt );
 
-    docomo.Update( docomo.GetVoice(), "hello" );
+    docomo.Update( docomo.GetVoice(), 'hello' );
     docomo.Talk( cmnt );
   });
 
@@ -211,12 +209,12 @@ function getData( gid ){
   console.log( "[main.js] getData()" );
   console.log( "[main.js] gid = " + gid );
 
-  const name = gidTable[gid] || "Guest";
+  const name = gidTable[gid] || 'Guest';
   console.log( "[main.js] name = " + name );
 
 //  var data = "{ gid:\"" + gid + "\", name:\"" + name + "\" }";
 
-  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: "" };
+  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: '' };
 
   // lastVisitDay を得るために GetData() で対象 GID のデータを取得する
   person.GetMDDocData( gid, name, function( err, data ){
@@ -254,9 +252,9 @@ function getData( gid ){
 var toDoubleDigits = function( num ){
   console.log( "[main.js] toDoubleDigits()" );
   console.log( "[main.js] num = " + num );
-  num += "";
+  num += '';
   if( num.length === 1 ){
-    num = "0" + num;
+    num = '0' + num;
   }
   return num;
 };
@@ -298,7 +296,7 @@ var hhmmss = function(){
   var min  = toDoubleDigits( date.getMinutes() );
   var sec  = toDoubleDigits( date.getSeconds() );
 
-  var time = hour + ":" + min + ":" + sec;
+  var time = hour + ':' + min + ':' + sec;
   console.log( "[main.js] time = " + time );
   return time;
 };
