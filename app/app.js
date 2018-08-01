@@ -57,7 +57,7 @@ server.on( 'S_to_C_DATA', function( data ){
               { gid:'0000920698', name:'本村パパ',     postfix:'さん' }, // 本村 謙介
               { gid:'0000931034', name:'金子店長',     postfix:'さん' }, // 金子 孝幸
               { gid:'0000108215', name:'福馬工房長',   postfix:'さん' }, // 福馬 洋平
-              { gid:'0000114347', name:'マイロード',   postfix:''"     }, // 森田 良二
+              { gid:'0000114347', name:'マイロード',   postfix:''     }, // 森田 良二
               { gid:'0000134706', name:'ぼす',         postfix:'さん' }, // 林 哲也
               { gid:'0000139082', name:'鈴木副工房長', postfix:'さん' }, // 鈴木 龍一
               { gid:'0000139174', name:'のぶし',       postfix:'さん' }  // 山本 崇晴
