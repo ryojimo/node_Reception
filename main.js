@@ -162,7 +162,7 @@ io.sockets.on( 'connection', function( socket ){
   // 切断したときに送信
   socket.on( 'disconnect', function(){
     console.log( "[main.js] " + 'disconnect' );
-//  io.sockets.emit("S_to_C_DATA", {value:"user disconnected"});
+//  io.sockets.emit('S_to_C_DATA', {value:'user disconnected'});
   });
 
 
@@ -250,8 +250,8 @@ function getData( gid ){
  * toDoubleDigits( 8 );
 */
 var toDoubleDigits = function( num ){
-  console.log( "[main.js] toDoubleDigits()" );
-  console.log( "[main.js] num = " + num );
+//  console.log( "[main.js] toDoubleDigits()" );
+//  console.log( "[main.js] num = " + num );
   num += '';
   if( num.length === 1 ){
     num = '0' + num;
