@@ -92,7 +92,7 @@ var io = socketio.listen( server );
 //-----------------------------------------------------------------------------
 var timerFlg;
 
-var person  = new DataPersons();
+var persons = new DataPersons();
 var room    = new DataRoom();
 var docomo  = new Docomo();
 
@@ -214,31 +214,40 @@ function getData( gid ){
 
 //  var data = "{ gid:\"" + gid + "\", name:\"" + name + "\" }";
 
-  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: '' };
+  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: Date() };
+  console.log( "[main.js] data = " + JSON.stringify(data) );
 
   // lastVisitDay を得るために GetData() で対象 GID のデータを取得する
-  person.GetMDDocData( gid, name, function( err, data ){
+  persons.GetMDDocData( data, function( err, doc ){
+    console.log( "[main.js] err     = " + err );
 
-    var lastVisitDay = data.lastVisitDay;
-    data.cnt++;
-    data.lastVisitDay = Date();
+    var lastVisitDay = Date();
 
-    console.log( "[main.js] data = " + data );
+    console.log( "[main.js] doc.gid = " + doc.gid );
 
-//      console.log( data );
-    if( err == true ){
-      person.UpdateMDDocData( data );
+    if( doc.gid != undefined ){
+      // すでにデータがある場合
+      console.log( "[main.js] doc     = " + JSON.stringify(doc) );
+      data.cnt = doc.cnt + 1;
+      lastVisitDay = doc.lastVisitDay;
+
+      console.log( "[main.js] data = " + JSON.stringify(data) );
+      persons.UpdateMDDoc( data );
     } else {
-      person.CreateMDDocData( data );
+      // すでにデータがない場合
+      console.log( "[main.js] data = " + JSON.stringify(data) );
+      persons.CreateMDDoc( data );
     }
 
-    // OSCAR から来た gid, name と前回の訪問日を送る
+    // 送る data の lastVisitDay を以前に来た日時にする
     data.lastVisitDay = lastVisitDay;
+    console.log( "[main.js] data = " + JSON.stringify(data) );
     io.sockets.emit( 'S_to_C_DATA', data );
 
     // 訪問者数カウントを更新する
-    room.Update();
+//    room.Update();
   });
+
 }
 
 

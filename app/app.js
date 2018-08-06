@@ -47,7 +47,7 @@ server.on( 'S_to_C_TIME', function( data ){
 
 server.on( 'S_to_C_DATA', function( data ){
   console.log( "[app.js] " + 'S_to_C_DATA' );
-  console.log( "[app.js] data = " + data.gid + ", " + data.name + ", " + data.cnt );
+  console.log( "[app.js] data = " + JSON.stringify(data) );
   console.log( "[app.js] date = " + data.lastVisitDay.substr(8, 2) );
 //  var obj = (new Function("return " + data))();
 
@@ -99,8 +99,8 @@ function talk( data ){
   // コメントをセットする
   setCmnt( data );
 
-  // 2sec 後にあいさつをしゃべる
-  setTimeout( "sendTalkHello()", 2000 );
+  // 6sec 後にあいさつをしゃべる
+//  setTimeout( "sendTalkHello()", 6000 );
 
   // 10sec 後に表示をリセット
   setTimeout( "resetMonitor()", 10000 );
@@ -119,8 +119,19 @@ function setCmnt( data ){
   console.log( "[app.js] data.name         = " + data.name );
   console.log( "[app.js] data.lastVisitDay = " + data.lastVisitDay );
 
-  // "○○さん" を g_cmnt にセット
-  g_cmnt = data.name;
+  var prefix = ['ようこそ',
+                'こんにちわ',
+                'いらっしゃいませ',
+               ];
+
+  var postfix = ['',
+                 'ご利用ありがとうございます',
+                 'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'
+               ];
+
+  var no_pre  = Math.floor( Math.random() * prefix.length );
+  var no_post = Math.floor( Math.random() * postfix.length );
+
 
   // 日付をチェックしてコメントを g_cmnt にセット
   var date = new Date();
@@ -131,9 +142,9 @@ function setCmnt( data ){
 
   var num = date.getDate() - day_flag;
   if( day_flag !== NaN && num > 3 ){
-    g_cmnt += '、' + num + '日ぶりですね。';
+    g_cmnt = prefix[ no_pre ] + data.name + '、' + num + '日ぶりですね。';
   } else {
-    g_cmnt += '、' + 'ご意見、ご要望はこの裏のアンケートへおねがいします。';
+    g_cmnt = postfix[ no_post ];
   }
 
   console.log( "[app.js] g_cmnt = " + g_cmnt );
@@ -213,20 +224,10 @@ function sendSetCmd( cmd ){
 */
 function sendTalkHello(){
   console.log( "[app.js] sendTalkHello()" );
-
-  var prefix = ['ようこそ',
-                'こんにちわ',
-                'いらっしゃいませ',
-                'ご利用ありがとうございます',
-                'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'
-               ];
-
-  var no = Math.floor( Math.random() * prefix.length );
-  var hi = prefix[ no ];
-  console.log( "[app.js] hi = " + hi );
+  console.log( "[app.js] g_cmnt = " + g_cmnt );
 
   console.log( "[app.js] server.emit(" + 'C_to_S_TALK_HELLO' + ")" );
-  server.emit( 'C_to_S_TALK_HELLO', hi + g_cmnt );
+  server.emit( 'C_to_S_TALK_HELLO', g_cmnt );
 
   // g_cmnt をクリア
   g_cmnt = '';
