@@ -214,29 +214,28 @@ function getData( gid ){
 
 //  var data = "{ gid:\"" + gid + "\", name:\"" + name + "\" }";
 
-  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: Date() };
+  var data = { gid: gid, name: name, cnt: 1, lastVisitDay: yyyymmdd() };
   console.log( "[main.js] data = " + JSON.stringify(data) );
 
   // lastVisitDay を得るために GetData() で対象 GID のデータを取得する
   persons.GetMDDocData( data, function( err, doc ){
-    console.log( "[main.js] err     = " + err );
+    console.log( "[main.js] err = " + err );
 
-    var lastVisitDay = Date();
+    var lastVisitDay = yyyymmdd();
 
-    console.log( "[main.js] doc.gid = " + doc.gid );
+    console.log( "[main.js] doc = " + JSON.stringify(doc) );
 
-    if( doc.gid != undefined ){
-      // すでにデータがある場合
-      console.log( "[main.js] doc     = " + JSON.stringify(doc) );
-      data.cnt = doc.cnt + 1;
-      lastVisitDay = doc.lastVisitDay;
+    if( doc.length == 0 ){
+      // データがない場合
+      console.log( "[main.js] data = " + JSON.stringify(data) );
+      persons.CreateMDDoc( data );
+    } else {
+      // データがある場合
+      data.cnt = doc[0].cnt + 1;
+      lastVisitDay = doc[0].lastVisitDay;
 
       console.log( "[main.js] data = " + JSON.stringify(data) );
       persons.UpdateMDDoc( data );
-    } else {
-      // すでにデータがない場合
-      console.log( "[main.js] data = " + JSON.stringify(data) );
-      persons.CreateMDDoc( data );
     }
 
     // 送る data の lastVisitDay を以前に来た日時にする
