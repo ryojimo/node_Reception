@@ -8,7 +8,7 @@
 
 // 必要なライブラリをロード
 var fs = require( 'fs' );
-require( 'date-utils' );
+var MongoClient  = require( 'mongodb' ).MongoClient;
 
 
 /**
@@ -20,36 +20,167 @@ require( 'date-utils' );
 */
 var DataRoom = function(){
   /**
-   * this.hur から this.hour+1 の間の入場者数 (= this.cnt )
-   * @type {Object}
+   * MongoDB のデータベース名
+   * @type {string}
   */
-  this.hour = 0;
-  this.cnt = 0;
+  this.nameDatabase = 'room';
 
   /**
-   * 1 日の入場者数
+   * MongoDB の URL
+   * @type {string}
+  */
+  this.mongo_url = 'mongodb://localhost:27017/';
+
+  /**
+   * 入場者数カウンタ
    * @type {Object}
   */
-  this.date = 0;
-  this.dataOneDay = { '00-00': 0, '01-00': 0, '02-00': 0, '03-00': 0, '04-00': 0, '05-00': 0,
-                      '06-00': 0, '07-00': 0, '08-00': 0, '09-00': 0, '10-00': 0, '11-00': 0,
-                      '12-00': 0, '13-00': 0, '14-00': 0, '15-00': 0, '16-00': 0, '17-00': 0,
-                      '18-00': 0, '19-00': 0, '20-00': 0, '21-00': 0, '22-00': 0, '23-00': 0};
+  this.cnt = 0;
 };
 
 
 /**
- * データを更新する
+ * 入場者数カウンタをクリアする
  * @param {void}
  * @return {void}
  * @example
- * Update( data );
+ * Clear();
+*/
+DataRoom.prototype.Clear = function(){
+  console.log( "[DataRoom.js] Clear()" );
+  this.cnt = 0;
+}
+
+
+/**
+ * 入場者数カウンタを更新する
+ * @param {void}
+ * @return {void}
+ * @example
+ * Update();
 */
 DataRoom.prototype.Update = function(){
   console.log( "[DataRoom.js] Update()" );
   this.cnt++;
   console.log( "[DataRoom.js] cnt = " + this.cnt );
 }
+
+
+/**
+ * 入場者数カウンタを取得する
+ * @param {void}
+ * @return {void}
+ * @example
+ * Update();
+*/
+DataRoom.prototype.Get = function(){
+  console.log( "[DataRoom.js] Get()" );
+  console.log( "[DataRoom.js] cnt = " + this.cnt );
+  return this.cnt;
+}
+
+
+/**
+ * Mongodb にデータベース、コレクション、ドキュメントを作成する。
+ * @param {string} day - 日付。( MongoDB のコレクション名でも使用 )
+ * @param {string} hour - 時間。
+ * @param {number} cnt - 訪問者数カウンタ。
+ * @return {void}
+ * @example
+ * CreateMDDoc( "2018-08-10", "08:00" );
+*/
+DataRoom.prototype.CreateMDDoc = function( day, hour ){
+  console.log( "[DataRoom.js] CreateMDDoc()" );
+
+  var doc = { hour: hour, cnt: this.cnt };
+
+  MongoClient.connect( this.mongo_url, function(err, db) {
+    if( err ){
+      throw err;
+    }
+
+    // データベースを取得する
+    var dbo = db.db( 'room' );
+
+    // コレクションを取得する
+    var clo = dbo.collection( day );
+
+    // doc をデータベースに insert する
+    clo.insertOne( doc, function(err, res) {
+      if( err ){
+        throw err;
+      }
+      db.close();
+    });
+  });
+}
+
+
+/**
+ * 指定した日付の訪問者数情報を取得する。
+ * @param {string} day - 対象の日付。( MongoDB のコレクション名でも使用 )
+ * @param {function(boolean, Object.<string, number>)} callback - データを取得するためのコールバック関数
+ * @return {void}
+ * @example
+ * GetMDDocDataOneDay( '2018-05-14',  );
+*/
+DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
+  console.log( "[DataRoom.js] GetMDDocDataOneDay()" );
+  console.log( "[DataRoom.js] day    = " + day );
+
+  var cname = day;  // コレクション名
+
+  var data = { '00-00': 0, '01-00': 0, '02-00': 0, '03-00': 0, '04-00': 0, '05-00': 0,
+               '06-00': 0, '07-00': 0, '08-00': 0, '09-00': 0, '10-00': 0, '11-00': 0,
+               '12-00': 0, '13-00': 0, '14-00': 0, '15-00': 0, '16-00': 0, '17-00': 0,
+               '18-00': 0, '19-00': 0, '20-00': 0, '21-00': 0, '22-00': 0, '23-00': 0
+             };
+
+  MongoClient.connect( this.mongo_url, function(err, db) {
+    if( err ) throw err;
+
+    // データベースを取得する
+    var dbo = db.db( 'room' );
+
+    // コレクションを取得する
+    var clo = dbo.collection( cname );
+
+    // コレクションに含まれるすべてのドキュメントを取得する
+    clo.find({}).toArray( function(err, documents){
+      try{
+        if( err ){
+          throw err;
+        }
+
+        var i = 0;
+        var len = documents.length;
+
+        for( i = 0; i < len; i++ ){
+          var hour = documents[i].hour;
+
+          hour = hour.replace( ':', '-' );    // hh:mm を hh-mm の形式に置換する
+
+          data[ hour ] = documents[i].cnt;
+        }
+        db.close();
+
+        var ret = false;
+        if( len == data.length ){
+          ret = true;
+        }
+
+//      console.log( data );
+        callback( ret, data );
+      }
+      catch( e ){
+        console.log( "[DataRoom.js] e = " + e );
+        callback( false, data );
+      }
+    });
+  });
+}
+
+
 
 
 /**

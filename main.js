@@ -147,10 +147,38 @@ startSystem();
 function startSystem() {
   console.log( "[main.js] startSystem()" );
 
+  var job;
+
   timerFlg  = setInterval( function(){
                 var hour = hhmmss().substr(0,5);      // hh:mm:ss から hh:mm を取り出して hour にセット
                 io.sockets.emit( 'S_to_C_TIME', {value:hour} );
               }, 30000 );
+
+  job = runRoom( '59 0-23/1 * * *' );
+};
+
+
+/**
+ * node-schedule の Job を登録する
+ * @param {string} when - Job を実行する時間
+ * @return {object} job - node-schedule に登録した job
+ * @example
+ * runRoom( ' 0 0-23/1 * * *' );
+*/
+function runRoom( when ) {
+  console.log( "[main.js] runRoom()" );
+  console.log( "[main.js] when = " + when );
+
+  var job = schedule.scheduleJob(when, function(){
+    console.log( "[main.js] node-schedule が実行されました" );
+
+    var hour = hhmmss().substr(0,2) + ':00';  // hh:mm:ss から hh を取り出す
+
+    room.CreateMDDoc( yyyymmdd(), hour );
+    room.Clear();
+  });
+
+  return job;
 };
 
 
@@ -244,7 +272,7 @@ function getData( gid ){
     io.sockets.emit( 'S_to_C_DATA', data );
 
     // 訪問者数カウントを更新する
-//    room.Update();
+    room.Update();
   });
 
 }
