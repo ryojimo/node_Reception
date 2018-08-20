@@ -154,6 +154,7 @@ DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
 
         var i = 0;
         var len = documents.length;
+        console.log( "[DataRoom.js] len = " + len );
 
         for( i = 0; i < len; i++ ){
           var hour = documents[i].hour;
@@ -164,8 +165,9 @@ DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
         }
         db.close();
 
+        console.log( "[DataRoom.js] data.length = " + data.length );
         var ret = false;
-        if( len == data.length ){
+        if( len == 24 ){
           ret = true;
         }
 
