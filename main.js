@@ -174,8 +174,8 @@ function runRoom( when ) {
 
     var hour = hhmmss().substr(0,2) + ':00';  // hh:mm:ss から hh を取り出す
 
-    room.CreateMDDoc( yyyymmdd(), hour );
-    room.Clear();
+    room.createDoc( yyyymmdd(), hour );
+    room.clear();
   });
 
   return job;
@@ -225,8 +225,8 @@ io.sockets.on( 'connection', function( socket ){
     console.log( "[main.js] " + 'C_to_S_TALK_HELLO' );
     console.log( "[main.js] cmnt = " + cmnt );
 
-    docomo.Update( docomo.GetVoice(), 'hello' );
-    docomo.Talk( cmnt );
+    docomo.update( docomo.GetVoice(), 'hello' );
+    docomo.talk( cmnt );
   });
 
 
@@ -245,8 +245,10 @@ function getData( gid ){
   var data = { gid: gid, name: name, cnt: 1, lastVisitDay: yyyymmdd() };
   console.log( "[main.js] data = " + JSON.stringify(data) );
 
+  var target = { 'gid': gid };
+
   // lastVisitDay を得るために GetData() で対象 GID のデータを取得する
-  persons.GetMDDocData( data, function( err, doc ){
+  persons.query( target, function( err, doc ){
     console.log( "[main.js] err = " + err );
 
     var lastVisitDay = yyyymmdd();
@@ -256,14 +258,14 @@ function getData( gid ){
     if( doc.length == 0 ){
       // データがない場合
       console.log( "[main.js] data = " + JSON.stringify(data) );
-      persons.CreateMDDoc( data );
+      persons.createDoc( data );
     } else {
       // データがある場合
       data.cnt = doc[0].cnt + 1;
       lastVisitDay = doc[0].lastVisitDay;
 
       console.log( "[main.js] data = " + JSON.stringify(data) );
-      persons.UpdateMDDoc( data );
+      persons.updateMDDoc( data );
     }
 
     // 送る data の lastVisitDay を以前に来た日時にする
@@ -272,7 +274,7 @@ function getData( gid ){
     io.sockets.emit( 'S_to_C_DATA', data );
 
     // 訪問者数カウントを更新する
-    room.Update();
+    room.update();
   });
 
 }

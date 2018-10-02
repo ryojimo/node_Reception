@@ -44,10 +44,10 @@ var DataRoom = function(){
  * @param {void}
  * @return {void}
  * @example
- * Clear();
+ * clear();
 */
-DataRoom.prototype.Clear = function(){
-  console.log( "[DataRoom.js] Clear()" );
+DataRoom.prototype.clear = function(){
+  console.log( "[DataRoom.js] clear()" );
   this.cnt = 0;
 }
 
@@ -57,10 +57,10 @@ DataRoom.prototype.Clear = function(){
  * @param {void}
  * @return {void}
  * @example
- * Update();
+ * update();
 */
-DataRoom.prototype.Update = function(){
-  console.log( "[DataRoom.js] Update()" );
+DataRoom.prototype.update = function(){
+  console.log( "[DataRoom.js] update()" );
   this.cnt++;
   console.log( "[DataRoom.js] cnt = " + this.cnt );
 }
@@ -71,46 +71,45 @@ DataRoom.prototype.Update = function(){
  * @param {void}
  * @return {void}
  * @example
- * Update();
+ * get();
 */
-DataRoom.prototype.Get = function(){
-  console.log( "[DataRoom.js] Get()" );
+DataRoom.prototype.get = function(){
+  console.log( "[DataRoom.js] get()" );
   console.log( "[DataRoom.js] cnt = " + this.cnt );
   return this.cnt;
 }
 
 
 /**
- * Mongodb にデータベース、コレクション、ドキュメントを作成する。
+ * 対象のコレクション (= day ) にドキュメントを作成する。
  * @param {string} day - 日付。( MongoDB のコレクション名でも使用 )
  * @param {string} hour - 時間。
- * @param {number} cnt - 訪問者数カウンタ。
  * @return {void}
  * @example
- * CreateMDDoc( "2018-08-10", "08:00" );
+ * createDoc( "2018-08-10", "08:00" );
 */
-DataRoom.prototype.CreateMDDoc = function( day, hour ){
-  console.log( "[DataRoom.js] CreateMDDoc()" );
+DataRoom.prototype.createDoc = function( day, hour ){
+  console.log( "[DataRoom.js] createDoc()" );
 
   var doc = { hour: hour, cnt: this.cnt };
 
-  MongoClient.connect( this.mongo_url, function(err, db) {
-    if( err ){
-      throw err;
-    }
+  MongoClient.connect( this.mongo_url, function(err, db){
+    if( err ) throw err;
 
-    // データベースを取得する
-    var dbo = db.db( 'room' );
-
-    // コレクションを取得する
-    var clo = dbo.collection( day );
+    var dbo = db.db( 'room' );        // データベースを取得する
+    var clo = dbo.collection( day );  // コレクションを取得する
 
     // doc をデータベースに insert する
-    clo.insertOne( doc, function(err, res) {
-      if( err ){
-        throw err;
+    clo.insertOne( doc, function(err, res){
+      try{
+        if( err ) throw err;
+
+        db.close();
       }
-      db.close();
+      catch( e ){
+        console.log( "[DataRoom.js] e = " + e + " : " + e.message );
+        db.close();
+      }
     });
   });
 }
@@ -122,13 +121,11 @@ DataRoom.prototype.CreateMDDoc = function( day, hour ){
  * @param {function(boolean, Object.<string, number>)} callback - データを取得するためのコールバック関数
  * @return {void}
  * @example
- * GetMDDocDataOneDay( '2018-05-14',  );
+ * getOneDay( '2018-05-14', function( err, doc ){} );
 */
-DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
-  console.log( "[DataRoom.js] GetMDDocDataOneDay()" );
+DataRoom.prototype.getOneDay = function( day, callback ){
+  console.log( "[DataRoom.js] getOneDay()" );
   console.log( "[DataRoom.js] day    = " + day );
-
-  var cname = day;  // コレクション名
 
   var data = { '00-00': 0, '01-00': 0, '02-00': 0, '03-00': 0, '04-00': 0, '05-00': 0,
                '06-00': 0, '07-00': 0, '08-00': 0, '09-00': 0, '10-00': 0, '11-00': 0,
@@ -136,46 +133,40 @@ DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
                '18-00': 0, '19-00': 0, '20-00': 0, '21-00': 0, '22-00': 0, '23-00': 0
              };
 
-  MongoClient.connect( this.mongo_url, function(err, db) {
+  MongoClient.connect( this.mongo_url, function(err, db){
     if( err ) throw err;
 
-    // データベースを取得する
-    var dbo = db.db( 'room' );
-
-    // コレクションを取得する
-    var clo = dbo.collection( cname );
+    var dbo = db.db( 'room' );        // データベースを取得する
+    var clo = dbo.collection( day );  // コレクションを取得する
 
     // コレクションに含まれるすべてのドキュメントを取得する
-    clo.find({}).toArray( function(err, documents){
+    clo.find( {} ).toArray( function(err, docs){
       try{
-        if( err ){
-          throw err;
-        }
+        if( err ) throw err;
 
         var i = 0;
-        var len = documents.length;
+        var len = docs.length;
         console.log( "[DataRoom.js] len = " + len );
 
         for( i = 0; i < len; i++ ){
-          var hour = documents[i].hour;
+          var hour = docs[i].hour;
 
           hour = hour.replace( ':', '-' );    // hh:mm を hh-mm の形式に置換する
 
-          data[ hour ] = documents[i].cnt;
+          data[ hour ] = docs[i].cnt;
         }
-        db.close();
-
-        console.log( "[DataRoom.js] data.length = " + data.length );
         var ret = false;
         if( len == 24 ){
           ret = true;
         }
 
-//      console.log( data );
+        db.close();
+        console.log( "[DataRoom.js] data = " + JSON.stringify(data) );
         callback( ret, data );
       }
       catch( e ){
-        console.log( "[DataRoom.js] e = " + e );
+        console.log( "[DataRoom.js] e = " + e + " : " + e.message );
+        db.close();
         callback( false, data );
       }
     });
@@ -190,10 +181,10 @@ DataRoom.prototype.GetMDDocDataOneDay = function( day, callback ){
  * @param {string} file - 対象のファイル ( フルパス )
  * @return {Object} ret - 読み出したデータ
  * @example
- * var obj = UpdateDataOneDay( '/media/pi/USBDATA/2018-01-23_room.txt' );
+ * var obj = updateOneDay( '/media/pi/USBDATA/2018-01-23_room.txt' );
 */
-DataRoom.prototype.UpdateDataOneDay = function( file ){
-  console.log( "[DataRoom.js] UpdateDataOneDay()" );
+DataRoom.prototype.updateOneDay = function( file ){
+  console.log( "[DataRoom.js] updateOneDay()" );
   console.log( "[DataRoom.js] file = " + file );
 
   var date = file.replace( '/media/pi/USBDATA/', '' );
@@ -230,10 +221,10 @@ DataRoom.prototype.UpdateDataOneDay = function( file ){
  * @param {string} file - 対象のファイル ( フルパス )
  * @return {void}
  * @example
- * AppendFile( "/media/pi/USBDATA/2018-01-23_room.txt" );
+ * appendFile( "/media/pi/USBDATA/2018-01-23_room.txt" );
 */
-DataRoom.prototype.AppendFile = function( file ){
-  console.log( "[DataRoom.js] AppendFile()" );
+DataRoom.prototype.appendFile = function( file ){
+  console.log( "[DataRoom.js] appendFile()" );
   console.log( "[DataRoom.js] file = " + file );
 
 
@@ -263,7 +254,7 @@ DataRoom.prototype.AppendFile = function( file ){
     fs.appendFileSync( file, str, 'utf8' );
   } catch( err ){
     if( err.code === 'ENOENT' ){
-      console.log( "[DataPerson.js] file does not exist." );
+      console.log( "[DataRoom.js] file does not exist." );
     }
   }
 

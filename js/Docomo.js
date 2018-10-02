@@ -39,10 +39,10 @@ var Docomo = function(){
  * @param {string} filename - ****.lpcm, ****.wav 中間ファイルのファイル名 (= **** の部分 )
  * @return {void}
  * @example
- * Update( "nozomi", "hello" );
+ * update( "nozomi", "hello" );
 */
-Docomo.prototype.Update = function( speaker, filename ){
-  console.log( "[Docomo.js] Update()" );
+Docomo.prototype.update = function( speaker, filename ){
+  console.log( "[Docomo.js] update()" );
   console.log( "[Docomo.js] filename = " + filename );
 
   this.voice = speaker;
@@ -55,15 +55,15 @@ Docomo.prototype.Update = function( speaker, filename ){
  * @param {void}
  * @return {string} voice- 話す声
  * @example
- * GetVoice();
+ * getVoice();
 */
 var voice =  ['nozomi', 'maki', 'reina', 'taichi',
               'sumire', 'kaho', 'akari', 'nanako',
               'seiji', 'osamu', 'hiroshi', 'anzu', 'tihiro', 'koutaro', 'yuto'
              ];
 
-Docomo.prototype.GetVoice = function(){
-  console.log( "[Docomo.js] GetVoice()" );
+Docomo.prototype.getVoice = function(){
+  console.log( "[Docomo.js] getVoice()" );
 
   var no = Math.floor( Math.random() * voice.length );
   return voice[no];
@@ -76,10 +76,10 @@ Docomo.prototype.GetVoice = function(){
  * @param {function} callback- play  ****.wav した後に呼び出すコールバック関数
  * @return {void}
  * @example
- * Talk( "こんにちは" );
+ * talk( "こんにちは" );
 */
-Docomo.prototype.Talk = function( cmnt, callback ){
-  console.log( "[Docomo.js] Talk()" );
+Docomo.prototype.talk = function( cmnt, callback ){
+  console.log( "[Docomo.js] talk()" );
   console.log( "[Docomo.js] cmnt     = " + cmnt );
 //  console.log( "[Docomo.js] callback = " + callback );
 
