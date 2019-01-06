@@ -7,8 +7,8 @@
 'use strict';
 
 // 必要なライブラリをロード
-var fs = require( 'fs' );
-var MongoClient  = require( 'mongodb' ).MongoClient;
+let fs = require('fs');
+let MongoClient  = require('mongodb').MongoClient;
 
 
 /**
@@ -16,9 +16,9 @@ var MongoClient  = require( 'mongodb' ).MongoClient;
  * @param {void}
  * @constructor
  * @example
- * var obj = new DataPersons();
+ * let obj = new DataPersons();
 */
-var DataPersons = function(){
+let DataPersons = function() {
   /**
    * MongoDB のデータベース名
    * @type {string}
@@ -44,27 +44,27 @@ var DataPersons = function(){
  * @param {Object.<string, string>} data - JSON 文字列
  * @return {void}
  * @example
- * createDoc( {} );
+ * createDoc({});
 */
-DataPersons.prototype.createDoc = function( data ){
-  console.log( "[DataPersons.js] createDoc()" );
-  console.log( "[DataPersons.js] data = " + JSON.stringify(data) );
+DataPersons.prototype.createDoc = function(data) {
+  console.log("[DataPersons.js] createDoc()");
+  console.log("[DataPersons.js] data = " + JSON.stringify(data));
 
-  MongoClient.connect( this.mongo_url, function(err, db){
-    if( err ) throw err;
+  MongoClient.connect(this.mongo_url, function(err, db) {
+    if(err) throw err;
 
-    var dbo = db.db( 'persons' );           // データベースを取得する
-    var clo = dbo.collection( 'visitor' );  // コレクションを取得する
+    let dbo = db.db('persons');           // データベースを取得する
+    let clo = dbo.collection('visitor');  // コレクションを取得する
 
     // doc をデータベースに insert する
-    clo.insertOne( data, function(err, res){
+    clo.insertOne(data, function(err, res) {
       try{
-        if( err ) throw err;
+        if(err) throw err;
 
         db.close();
       }
-      catch( e ){
-        console.log( "[DataPersons.js] e = " + e + " : " + e.message );
+      catch(e) {
+        console.log("[DataPersons.js] e = " + e + " : " + e.message);
         db.close();
       }
     });
@@ -77,30 +77,30 @@ DataPersons.prototype.createDoc = function( data ){
  * @param {Object.<string, string>} data - JSON 文字列
  * @return {void}
  * @example
- * updateMDDoc( {} );
+ * updateMDDoc({});
 */
-DataPersons.prototype.updateMDDoc = function( data ){
-  console.log( "[DataPersons.js] updateMDDoc()" );
-  console.log( "[DataPersons.js] data = " + JSON.stringify(data) );
+DataPersons.prototype.updateMDDoc = function(data) {
+  console.log("[DataPersons.js] updateMDDoc()");
+  console.log("[DataPersons.js] data = " + JSON.stringify(data));
 
-  MongoClient.connect( this.mongo_url, function(err, db){
-    if( err ) throw err;
+  MongoClient.connect(this.mongo_url, function(err, db) {
+    if(err) throw err;
 
-    var dbo = db.db( 'persons' );           // データベースを取得する
-    var clo = dbo.collection( 'visitor' );  // コレクションを取得する
+    let dbo = db.db('persons');           // データベースを取得する
+    let clo = dbo.collection('visitor');  // コレクションを取得する
 
-    var query = { gid: data.gid };
-    var newvalues = { $set: {cnt: data.cnt, lastVisitDay: data.lastVisitDay } };
+    let query = { gid: data.gid };
+    let newvalues = { $set: {cnt: data.cnt, lastVisitDay: data.lastVisitDay } };
 
     // doc をデータベースに insert する
-    clo.updateOne( query, newvalues, function(err, res){
+    clo.updateOne(query, newvalues, function(err, res) {
       try{
-        if( err ) throw err;
+        if(err) throw err;
 
         db.close();
       }
-      catch( e ){
-        console.log( "[DataPersons.js] e = " + e + " : " + e.message );
+      catch(e) {
+        console.log("[DataPersons.js] e = " + e + " : " + e.message);
         db.close();
       }
     });
@@ -114,31 +114,31 @@ DataPersons.prototype.updateMDDoc = function( data ){
  * @param {function(boolean, Object)} callback - データを取得するためのコールバック関数
  * @return {void}
  * @example
- * query( {'gid': 0000114347}, function( err, doc ){} );
+ * query({'gid': 0000114347}, function(err, doc) {});
 */
-DataPersons.prototype.query = function( query, callback ){
-  console.log( "[DataPersons.js] query()" );
-  console.log( "[DataPersons.js] query = " + JSON.stringify(query) );
+DataPersons.prototype.query = function(query, callback) {
+  console.log("[DataPersons.js] query()");
+  console.log("[DataPersons.js] query = " + JSON.stringify(query));
 
-  MongoClient.connect( this.mongo_url, function(err, db){
-    if( err ) throw err;
+  MongoClient.connect(this.mongo_url, function(err, db) {
+    if(err) throw err;
 
-    var dbo = db.db( 'persons' );           // データベースを取得する
-    var clo = dbo.collection( 'visitor' );  // コレクションを取得する
+    let dbo = db.db('persons');           // データベースを取得する
+    let clo = dbo.collection('visitor');  // コレクションを取得する
 
-    clo.find( query ).toArray( function(err, docs){
+    clo.find(query).toArray(function(err, docs) {
       try{
-        if( err ) throw err;
+        if(err) throw err;
 
         db.close();
-        console.log( "[DataPersons.js] docs.length = " + docs.length );
-//        console.log( "[DataPersons.js] docs        = " + JSON.stringify(docs) );
-        callback( true, docs );
+        console.log("[DataPersons.js] docs.length = " + docs.length);
+//        console.log("[DataPersons.js] docs        = " + JSON.stringify(docs));
+        callback(true, docs);
       }
-      catch( e ){
-        console.log( "[DataPersons.js] e = " + e + " : " + e.message );
+      catch(e) {
+        console.log("[DataPersons.js] e = " + e + " : " + e.message);
         db.close();
-        callback( false, docs );
+        callback(false, docs);
       }
     });
   });
@@ -150,33 +150,33 @@ DataPersons.prototype.query = function( query, callback ){
  * @param {function(boolean, Object)} callback - データを取得するためのコールバック関数
  * @return {void}
  * @example
- * getRankingTop50( function( err, doc ){} );
+ * getRankingTop50(function(err, doc) {});
 */
-DataPersons.prototype.getRankingTop50 = function( callback ){
-  console.log( "[DataPersons.js] getRankingTop50()" );
+DataPersons.prototype.getRankingTop50 = function(callback) {
+  console.log("[DataPersons.js] getRankingTop50()");
 
-  MongoClient.connect( this.mongo_url, function(err, db){
-    if( err ) throw err;
+  MongoClient.connect(this.mongo_url, function(err, db) {
+    if(err) throw err;
 
-    var dbo = db.db( 'persons' );           // データベースを取得する
-    var clo = dbo.collection( 'visitor' );  // コレクションを取得する
+    let dbo = db.db('persons');           // データベースを取得する
+    let clo = dbo.collection('visitor');  // コレクションを取得する
 
-    var sort = { cnt: -1 };
+    let sort = { cnt: -1 };
 
     // ドキュメントを取得する
-    clo.find( {}, {sort:{cnt: -1}, limit:50} ).toArray( function(err, docs){
+    clo.find({}, {sort:{cnt: -1}, limit:50}).toArray(function(err, docs) {
       try{
         if (err) throw err;
 
         db.close();
-        console.log( "[DataPersons.js] docs.length = " + docs.length );
-//        console.log( "[DataPersons.js] docs = " + JSON.stringify(docs) );
-        callback( true, docs );
+        console.log("[DataPersons.js] docs.length = " + docs.length);
+//        console.log("[DataPersons.js] docs = " + JSON.stringify(docs));
+        callback(true, docs);
       }
-      catch( e ){
-        console.log( "[DataPersons.js] e = " + e + " : " + e.message );
+      catch(e) {
+        console.log("[DataPersons.js] e = " + e + " : " + e.message);
         db.close();
-        callback( false, docs );
+        callback(false, docs);
       }
     });
   });
