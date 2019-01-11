@@ -3,12 +3,12 @@
  * @author       Ryoji Morita
  * @version      0.0.1
 */
-var sv_ip   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
-//var sv_ip   = '43.2.100.151';               // node.js server の IP アドレス
-//var sv_ip   = '192.168.91.1';               // node.js server の IP アドレス
-var sv_port = 4000;                           // node.js server の port 番号
+let sv_ip   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
+//let sv_ip   = '43.2.100.151';               // node.js server の IP アドレス
+//let sv_ip   = '192.168.91.1';               // node.js server の IP アドレス
+let sv_port = 4000;                           // node.js server の port 番号
 
-var server = io.connect('http://' + sv_ip + ':' + sv_port); //ローカル
+let server = io.connect('http://' + sv_ip + ':' + sv_port); //ローカル
 
 
 //-----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ server.on('disconnect', function(client) {    // 切断時
 });
 
 
-var g_cmnt = "";
+let g_cmnt = "";
 
 
 server.on('S_to_C_TIME', function(data) {
@@ -49,10 +49,10 @@ server.on('S_to_C_DATA', function(data) {
   console.log("[app.js] " + 'S_to_C_DATA');
   console.log("[app.js] data = " + JSON.stringify(data));
   console.log("[app.js] date = " + data.lastVisitDay.substr(8, 2));
-//  var obj = (new Function("return " + data))();
+//  let obj = (new Function("return " + data))();
 
   // Special Name
-  var name = [
+  let name = [
               {gid:'0000900576', name:'中田先生',     postfix:'さん'}, // 中田 充
               {gid:'0000920698', name:'本村パパ',     postfix:'さん'}, // 本村 謙介
               {gid:'0000931034', name:'金子店長',     postfix:'さん'}, // 金子 孝幸
@@ -64,7 +64,7 @@ server.on('S_to_C_DATA', function(data) {
              ];
 
   // data.gid が name テーブルにあれば data.name を変える
-  var postfix = 'さん';
+  let postfix = 'さん';
   for(i = 0; i < name.length; i++) {
     if(name[i].gid == data.gid) {
       data.name = name[i].name;
@@ -79,7 +79,7 @@ server.on('S_to_C_DATA', function(data) {
 
   // しゃべる
   // data.name を苗字と "さん" の形にする
-  var lastname = data.name.split(' ');
+  let lastname = data.name.split(' ');
   data.name = lastname[0] + postfix;
   talk(data);
 });
@@ -119,28 +119,28 @@ function setCmnt(data) {
   console.log("[app.js] data.name         = " + data.name);
   console.log("[app.js] data.lastVisitDay = " + data.lastVisitDay);
 
-  var prefix = ['ようこそ',
+  let prefix = ['ようこそ',
                 'こんにちわ',
                 'いらっしゃいませ',
                ];
 
-  var postfix = ['',
+  let postfix = ['',
                  'ご利用ありがとうございます',
                  'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'
                ];
 
-  var no_pre  = Math.floor(Math.random() * prefix.length);
-  var no_post = Math.floor(Math.random() * postfix.length);
+  let no_pre  = Math.floor(Math.random() * prefix.length);
+  let no_post = Math.floor(Math.random() * postfix.length);
 
 
   // 日付をチェックしてコメントを g_cmnt にセット
-  var date = new Date();
+  let date = new Date();
 
-  var day_flag = parseInt(data.lastVisitDay.substr(8, 2));
+  let day_flag = parseInt(data.lastVisitDay.substr(8, 2));
   console.log("[app.js] date.getDate() = " + date.getDate());
   console.log("[app.js] day_flag       = " + day_flag);
 
-  var num = date.getDate() - day_flag;
+  let num = date.getDate() - day_flag;
   if(day_flag !== NaN && num > 3) {
     g_cmnt = prefix[ no_pre ] + data.name + '、' + num + '日ぶりですね。';
   } else {
@@ -161,37 +161,23 @@ function setCmnt(data) {
 function resetMonitor() {
   console.log("[app.js] resetMonitor()");
 
-  var date = new Date();
-  var yobi = new Array('日', '月', '火', '水', '木', '金', '土');
+  let date = new Date();
+  let yobi = new Array('日', '月', '火', '水', '木', '金', '土');
 
-  var month = toDoubleDigits(date.getMonth() + 1);
-  var day   = toDoubleDigits(date.getDate());
-  var week  = date.getDay();
-  var time  = toDoubleDigits(date.getHours()) + ':' + toDoubleDigits(date.getMinutes());
+  let month = ('0' + (date.getMonth() + 1)).slice(-2);
+  let day   = ('0' + date.getDate()).slice(-2);
+  let week  = date.getDay();
+
+
+  let hour = ('0' + date.getHours()).slice(-2);   // 現在の時間を 2 桁表記で取得
+  let min  = ('0' + date.getMinutes()).slice(-2); // 現在の分  を 2 桁表記で取得
+  let time = hour + ':' + min;
 
   document.getElementById('val_prefix' ).innerHTML = month + '/' + day + '(' + yobi[week] + ')';
   document.getElementById('val_name'   ).innerHTML = '';    // 名前を表示
   document.getElementById('val_time'   ).innerHTML = time;  // 時間を表示
   document.getElementById('val_postfix').innerHTML = '';    // postfix を表示
 }
-
-
-/**
- * 数字が 1 桁の場合に 0 埋めで 2 桁にする
- * @param {number} num - 数値
- * @return {number} num - 0 埋めされた 2 桁の数値
- * @example
- * toDoubleDigits(8);
-*/
-var toDoubleDigits = function(num) {
-  console.log("[app.js] toDoubleDigits()");
-  console.log("[app.js] num = " + num);
-  num += '';
-  if(num.length === 1) {
-    num = "0" + num;
-  }
-  return num;
-};
 
 
 //-----------------------------------------------------------------------------

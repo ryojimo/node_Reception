@@ -9,8 +9,8 @@ let http     = require('http');
 let socketio = require('socket.io');
 let fs       = require('fs');
 let colors   = require('colors');
-require('date-utils');
 let schedule = require('node-schedule');
+require('date-utils');
 
 const DataPersons = require('./js/DataPersons');
 const DataRoom    = require('./js/DataRoom');
@@ -112,20 +112,6 @@ oscarReader.on('oscarGID', (gid) => {
     getData(gid);
   }
 });
-
-
-/**
- * node-schedule の Job を登録する
- *   04:00 ～ 23:00 の間、1時間ごとに room.StoreDataToday() を実行する
- * @param {void}
- * @return {void}
- * @example
- * startSystem();
-*/
-//let job = schedule.scheduleJob('59 0-23/1 * * *', function() {
-//  console.log("[main.js] node-schedule で Job (= room.AppendFile()) が実行されました");
-//  room.AppendFile("/media/pi/USBDATA/" + yyyymmdd() + "_room.txt");
-//});
 
 
 startSystem();
