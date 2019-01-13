@@ -3,12 +3,12 @@
  * @author       Ryoji Morita
  * @version      0.0.1
 */
-let sv_ip   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
-//let sv_ip   = '43.2.100.151';               // node.js server の IP アドレス
-//let sv_ip   = '192.168.91.1';               // node.js server の IP アドレス
-let sv_port = 4000;                           // node.js server の port 番号
+//const SV_IP   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
+//const SV_IP   = '43.2.100.151';                 // node.js server の IP アドレス
+const SV_IP   = '192.168.91.11';                // node.js server の IP アドレス
+const SV_PORT = 4000;                           // node.js server の port 番号
 
-let server = io.connect('http://' + sv_ip + ':' + sv_port); //ローカル
+let server = io.connect('http://' + SV_IP + ':' + SV_PORT); //ローカル
 
 
 //-----------------------------------------------------------------------------
@@ -51,6 +51,36 @@ server.on('S_to_C_DATA', function(data) {
   console.log("[app.js] date = " + data.lastVisitDay.substr(8, 2));
 //  let obj = (new Function("return " + data))();
 
+  // モニタに表示する
+  displayMonitor(data);
+
+  // data.name を苗字と "さん" の形にする
+  let lastname = data.name.split(' ');
+  data.name = lastname[0] + postfix;
+
+  // コメントを取得する
+  g_cmnt = getCmnt(data);
+
+  // 6sec 後にあいさつをしゃべる
+  setTimeout("sendTalkHello()", 6000);
+
+  // 10sec 後にモニタ表示をリセットする
+  setTimeout("resetMonitor()", 10000);
+
+});
+
+
+/**
+ * モニタ表示に表示する
+ * @param {object} data - 表示する json 形式のデータ
+ * @return {void}
+ * @example
+ * resetMonitor();
+*/
+function displayMonitor(jsonObj) {
+  console.log("[app.js] displayMonitor()");
+  console.log("[app.js] jsonObj = " + JSON.stringify(jsonObj));
+
   // Special Name
   let name = [
               {gid:'0000900576', name:'中田先生',     postfix:'さん'}, // 中田 充
@@ -63,91 +93,20 @@ server.on('S_to_C_DATA', function(data) {
               {gid:'0000139174', name:'のぶし',       postfix:'さん'}  // 山本 崇晴
              ];
 
-  // data.gid が name テーブルにあれば data.name を変える
   let postfix = 'さん';
-  for(i = 0; i < name.length; i++) {
-    if(name[i].gid == data.gid) {
-      data.name = name[i].name;
-      postfix   = name[i].postfix;
+
+  // data.gid が name テーブルにあれば data.name を変える
+  for(let value of name) {
+    if(value.gid == jsonObj.gid) {
+      jsonObj.name = value.name;
+      postfix      = value.postfix;
     }
   }
 
   document.getElementById('val_prefix' ).innerHTML = 'ようこそ';
-  document.getElementById('val_name'   ).innerHTML = data.name;   // 名前を表示
-  document.getElementById('val_time'   ).innerHTML = '';          // 時刻表示をクリア
-  document.getElementById('val_postfix').innerHTML = postfix;     // postfix を表示
-
-  // しゃべる
-  // data.name を苗字と "さん" の形にする
-  let lastname = data.name.split(' ');
-  data.name = lastname[0] + postfix;
-  talk(data);
-});
-
-
-//-------------------------------------
-/**
- * しゃべる
- * @param {object} data - { gid:"", name:"", cnt:1, lastVisitDay:"" } 形式のオブジェクト
- * @return {void}
- * @example
- * talk();
-*/
-function talk(data) {
-  console.log("[app.js] talk()");
-
-  // コメントをセットする
-  setCmnt(data);
-
-  // 6sec 後にあいさつをしゃべる
-//  setTimeout("sendTalkHello()", 6000);
-
-  // 10sec 後に表示をリセット
-  setTimeout("resetMonitor()", 10000);
-}
-
-
-/**
- * コメントを g_cmnt にセットする
- * @param {object} data - { gid:"", name:"", cnt:1, lastVisitDay:"" } 形式のオブジェクト
- * @return {void}
- * @example
- * talk();
-*/
-function setCmnt(data) {
-  console.log("[app.js] setCmnt()");
-  console.log("[app.js] data.name         = " + data.name);
-  console.log("[app.js] data.lastVisitDay = " + data.lastVisitDay);
-
-  let prefix = ['ようこそ',
-                'こんにちわ',
-                'いらっしゃいませ',
-               ];
-
-  let postfix = ['',
-                 'ご利用ありがとうございます',
-                 'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'
-               ];
-
-  let no_pre  = Math.floor(Math.random() * prefix.length);
-  let no_post = Math.floor(Math.random() * postfix.length);
-
-
-  // 日付をチェックしてコメントを g_cmnt にセット
-  let date = new Date();
-
-  let day_flag = parseInt(data.lastVisitDay.substr(8, 2));
-  console.log("[app.js] date.getDate() = " + date.getDate());
-  console.log("[app.js] day_flag       = " + day_flag);
-
-  let num = date.getDate() - day_flag;
-  if(day_flag !== NaN && num > 3) {
-    g_cmnt = prefix[ no_pre ] + data.name + '、' + num + '日ぶりですね。';
-  } else {
-    g_cmnt = postfix[ no_post ];
-  }
-
-  console.log("[app.js] g_cmnt = " + g_cmnt);
+  document.getElementById('val_name'   ).innerHTML = jsonObj.name;  // 名前を表示
+  document.getElementById('val_time'   ).innerHTML = '';            // 時刻表示をクリア
+  document.getElementById('val_postfix').innerHTML = postfix;       // postfix を表示
 }
 
 
@@ -180,24 +139,43 @@ function resetMonitor() {
 }
 
 
-//-----------------------------------------------------------------------------
-// ドキュメント・オブジェクトから受け取るイベント
-
-
-//-----------------------------------------------------------------------------
 /**
- * Set コマンドを送る。
- * @param {string} cmd - コマンドの文字列
- * @return {void}
+ * コメントを返す
+ * @param {object} data - { gid:"", name:"", cnt:1, lastVisitDay:"" } 形式のオブジェクト
+ * @return {string} cmnt - コメントの文字列
  * @example
- * sendSetCmd('sudo ./board.out usbkey 0x3E');
+ * getCmnt();
 */
-function sendSetCmd(cmd) {
-  console.log("[app.js] sendSetCmd()");
-  console.log("[app.js] cmd = " + cmd);
+function getCmnt(data) {
+  console.log("[app.js] getCmnt()");
+  console.log("[app.js] data.name         = " + data.name);
+  console.log("[app.js] data.lastVisitDay = " + data.lastVisitDay);
 
-  console.log("[app.js] server.emit(" + 'C_to_S_SET' + ")");
-  server.emit('C_to_S_SET', cmd);
+  let prefix = ['ようこそ',
+                'こんにちわ',
+                'いらっしゃいませ'];
+  let postfix = ['',
+                 'ご利用ありがとうございます',
+                 'ステージ上の畳の上に椅子を置くときは足あとが残らないようにしてください'];
+  let no_pre  = Math.floor(Math.random() * prefix.length);
+  let no_post = Math.floor(Math.random() * postfix.length);
+  let cmnt = '';
+
+  // 日付をチェックしてコメントを cmnt にセット
+  let date = new Date();
+
+  let day_flag = parseInt(data.lastVisitDay.substr(8, 2));
+  console.log("[app.js] date.getDate() = " + date.getDate());
+  console.log("[app.js] day_flag       = " + day_flag);
+
+  let num = date.getDate() - day_flag;
+  if(day_flag !== NaN && num > 3) {
+    cmnt = prefix[ no_pre ] + data.name + '、' + num + '日ぶりですね。';
+  } else {
+    cmnt = postfix[ no_post ];
+  }
+  console.log("[app.js] cmnt = " + cmnt);
+  return cmnt;
 }
 
 
@@ -217,6 +195,27 @@ function sendTalkHello() {
 
   // g_cmnt をクリア
   g_cmnt = '';
+}
+
+
+//-----------------------------------------------------------------------------
+// ドキュメント・オブジェクトから受け取るイベント
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Set コマンドを送る。
+ * @param {string} cmd - コマンドの文字列
+ * @return {void}
+ * @example
+ * sendSetCmd('sudo ./board.out usbkey 0x3E');
+*/
+function sendSetCmd(cmd) {
+  console.log("[app.js] sendSetCmd()");
+  console.log("[app.js] cmd = " + cmd);
+
+  console.log("[app.js] server.emit(" + 'C_to_S_SET' + ")");
+  server.emit('C_to_S_SET', cmd);
 }
 
 
