@@ -204,15 +204,17 @@ function getData(gid) {
   console.log("[main.js] data = " + JSON.stringify(data));
 
   let flag = false;
-  for(let value of g_arrayObj) {
-    let info = value.get();
-    if(info.gid == gid) {
-      lastday = info.lastVisitDay;
-      value.update();
-      flag = true;
+  if(g_arrayObj.length > 0) {
+    for(let value of g_arrayObj) {
+      let info = value.get();
+      if(info.gid == gid) {
+        lastday = info.lastVisitDay;
+        value.update();
+        flag = true;
 
-      data = value.get();
-      break;
+        data = value.get();
+        break;
+      }
     }
   }
 
