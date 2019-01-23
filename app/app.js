@@ -75,7 +75,7 @@ server.on('S_to_C_DATA', function(data) {
  * @param {object} data - 表示する json 形式のデータ
  * @return {void}
  * @example
- * resetMonitor();
+ * displayMonitor();
 */
 function displayMonitor(jsonObj) {
   console.log("[app.js] displayMonitor()");
@@ -126,7 +126,6 @@ function resetMonitor() {
   let month = ('0' + (date.getMonth() + 1)).slice(-2);
   let day   = ('0' + date.getDate()).slice(-2);
   let week  = date.getDay();
-
 
   let hour = ('0' + date.getHours()).slice(-2);   // 現在の時間を 2 桁表記で取得
   let min  = ('0' + date.getMinutes()).slice(-2); // 現在の分  を 2 桁表記で取得
