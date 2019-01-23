@@ -18,13 +18,16 @@ let g_apiCmn = new ApiCmn();
  * @param {void}
  * @constructor
  * @example
- * let obj = new DataRoom();
+ * let obj = new DataPerson();
 */
-class DataRoom {
+class DataPerson {
 
   constructor(jsonObj) {
     this.data = {
-      cnt: 0,             // @type {number} : 総入場者数
+      gid: "",            // @type {string} : 訪問者の Global ID
+      name: "",           // @type {string} : 訪問者の名前
+      cnt: 0,             // @type {number} : 訪問回数
+      lastVisitDay: "",   // @type {string} : 最後に来た日にち
     };
 
     this.data = jsonObj;
@@ -56,21 +59,23 @@ class DataRoom {
 
 
   /**
-   * this.data.cnt を更新する。
+   * this.data.cnt, this.data.lastVisiteDay を更新する。
    * @param {void}
    * @return {void}
    * @example
-   * updateCnt();
+   * update();
   */
-  updateCnt() {
-    console.log("[DataRoom.js] updateCnt()");
+  update() {
+    console.log("[DataPerson.js] update()");
+
     this.data.cnt++;
+    this.lastVisitDay = g_apiCmn.yyyymmdd();
   }
 
 
 };
 
 
-module.exports = DataRoom;
+module.exports = DataPerson;
 
 
