@@ -156,7 +156,7 @@ class ApiDocomo {
     let docomoOptions = {
       uri: this.base_url + this.api_key,
 
-//      proxy: 'http://proxy.sngw.sony.co.jp:10080',    // proxy 環境の時のみ記述
+      proxy: 'http://proxy.sngw.sony.co.jp:10080',    // proxy 環境の時のみ記述
 
       headers: {
         'Content-Type': 'application/ssml+xml',

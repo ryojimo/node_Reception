@@ -54,7 +54,7 @@ function doRequest(
       }
       res.writeHead(200, {'Content-Type': 'text/html',
                           'Access-Control-Allow-Origin': '*'
-                    });
+                   });
       res.write(data);
       res.end();
     });
@@ -63,7 +63,7 @@ function doRequest(
     fs.readFile('./app/app.js', 'UTF-8', function(err, data) {
       res.writeHead(200, {'Content-Type': 'application/javascript',
                           'Access-Control-Allow-Origin': '*'
-                    });
+                   });
       res.write(data);
       res.end();
     });
@@ -72,8 +72,17 @@ function doRequest(
     fs.readFile('./app/style.css', 'UTF-8', function(err, data) {
       res.writeHead(200, {'Content-Type': 'text/css',
                           'Access-Control-Allow-Origin': '*'
-                    });
+                   });
       res.write(data);
+      res.end();
+    });
+  break;
+  case '/background.jpg':
+    fs.readFile( './app/background.jpg', 'binary', function(err, data) {
+      res.writeHead(200, {'Content-Type': 'image/jpg',
+                          'Access-Control-Allow-Origin': '*'
+                   });
+      res.write(data, 'binary');
       res.end();
     });
   break;

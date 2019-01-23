@@ -3,9 +3,9 @@
  * @author       Ryoji Morita
  * @version      0.0.1
 */
-//const SV_IP   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
+const SV_IP   = 'reception.rp.lfx.sony.co.jp';  // node.js server の IP アドレス
 //const SV_IP   = '43.2.100.151';                 // node.js server の IP アドレス
-const SV_IP   = '192.168.91.11';                // node.js server の IP アドレス
+//const SV_IP   = '192.168.91.11';                // node.js server の IP アドレス
 const SV_PORT = 4000;                           // node.js server の port 番号
 
 let server = io.connect('http://' + SV_IP + ':' + SV_PORT); //ローカル
@@ -132,7 +132,7 @@ function resetMonitor() {
   let min  = ('0' + date.getMinutes()).slice(-2); // 現在の分  を 2 桁表記で取得
   let time = hour + ':' + min;
 
-  document.getElementById('val_prefix' ).innerHTML = month + '/' + day + '(' + yobi[week] + ')';
+  document.getElementById('val_prefix' ).innerHTML = '平成３１年　' + month + '/' + day + '(' + yobi[week] + ')';
   document.getElementById('val_name'   ).innerHTML = '';    // 名前を表示
   document.getElementById('val_time'   ).innerHTML = time;  // 時間を表示
   document.getElementById('val_postfix').innerHTML = '';    // postfix を表示

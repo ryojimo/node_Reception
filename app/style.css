@@ -29,7 +29,7 @@ body{
 
   color: white;
   background-color: black;
-//  background-image: url("./bg.gif");
+  background-image: url("./background.jpg");
   background-repeat: no-repeat;
   background-size: 100% auto;
 }
@@ -72,11 +72,11 @@ section p{
 }
 
 section p.name{
-  font-size: 1.7em;
+  font-size: 1em;
 }
 
 section p.time{
-  font-size: 3em;
+  font-size: 2em;
 }
 
 
